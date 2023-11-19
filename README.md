@@ -50,8 +50,31 @@ Discord Embed-
 ![Discord Embed](https://cdn.discordapp.com/attachments/1172623368994955354/1175633667209560174/image.png?ex=656bf12c&is=65597c2c&hm=611843008b6fe4c3d1df5dca43f9b912c6d3ad19ee363e499a600963730df6be&)
 
 
+##  Changelog
+
++ 11/18/2023 - Released & Fixes
+  - Released publicly
+  - Bug fixes (decoding issues)
+  - Speed increase (made concurrent)
+  - Error handling (will ignore errors, and set info as "error")
+  - Error counting
+
++ 11/19/2023 - 
+  - Speed increase, help w/ ratelimits (removed unnessary req)
+  - Ratelimit counting
+
+
+## To do (coming soon) 
+
++ Proxy support (w/ proxychecker & scraper)
++ Interchangable http clients (between aiohttp & aiosonic)
++ Multiple account queue
++ Discord bot client w/ commands (optional)
++ Improvement in UI
+
+
 ## Thanks
 
 Concept & Idea from [lad / novak](https://github.com/ladiscool)
 
-Bypass stuff all from [xolo](https://github.com/efenatuyo)
+Bypass code from [xolo](https://github.com/efenatuyo)
