@@ -1,10 +1,17 @@
+// proxy support coming soon not implemented yet, keep Proxy>isEnabled "false"
+
 {
     "Config": {
       "robloxUserID": "",
       "robloxCookie": ""
       },
     "Checker": {
-      "antiRatelimit": "1" 
+        "antiRatelimit": "0",
+        "Proxy": {
+            "isEnabled": false,
+            "autoScrape": false ,
+            "timeout": 5
+        }
     },
     "Discord": {
       "isEnabled": false,
