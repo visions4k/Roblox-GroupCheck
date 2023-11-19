@@ -35,7 +35,6 @@ class Process:
         headers = {'Cookie': f".ROBLOSECURITY={robloxCookie}"}
         r = await self.client.get(f"https://economy.roblox.com/v1/groups/{GID}/currency", headers=headers)
         d = await r.json()
-        print(d)
         return d.get("robux")
         
     
