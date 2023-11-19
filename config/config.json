@@ -1,0 +1,13 @@
+{
+    "Config": {
+      "robloxUserID": "",
+      "robloxCookie": ""
+      },
+    "Checker": {
+      "antiRatelimit": "1" 
+    },
+    "Discord": {
+      "isEnabled": false,
+      "webhookURL": "https://discord.com/api/webhooks/####"
+    }
+}
