@@ -7,29 +7,37 @@ from checker.cload import *
 from checker.extras import *
 from datetime import datetime
 from colorama import Fore, Style
+from yarl import URL
 
 class Process:
     def __init__(self, bypassedCookie):
         self.gidList = []
+        self.groupInfoDict = {}
         self.rateLimit = antiRatelimit
         self.cookie = bypassedCookie
         self.proxyList = loadProxies()
         self.client = aiosonic.HTTPClient()
         self.errors = 0
+        self.errorsRL = 0
         
 
     async def getRequest(self, url, headers=None):
         while proxyEnabled:
-            try:
-                print("not yet")
-            except Exception as e:
-                self.errors += 1
-                continue
-        r = await self.client.get(url, headers=headers)
-        if r.status_code == 200:
-            return await r.json()
-        self.errors += 1
-        return None
+            print("not avaliable yet")
+        else:
+            for _ in range(3):
+                try:
+                    r = await self.client.get(url, headers=headers)
+                    if r.status_code == 200:
+                        return await r.json()
+                    elif r.status_code == 429:
+                        self.errorsRL += 1
+                        break 
+                    else:
+                        self.errors += 1
+                except Exception as e:
+                    self.errors += 1
+            return None
 
 
     async def getGroups(self):
@@ -38,19 +46,12 @@ class Process:
         groups = d.get('data', [])
         for group_data in groups:
             if group_data['role']['rank'] == 255:
-                self.gidList.append(group_data['group']['id'])
+                gid = group_data['group']['id']
+                groupName = group_data['group']['name']
+                groupMem = group_data['group']['memberCount']
+                self.gidList.append(gid)
+                self.groupInfoDict[gid] = (groupName, groupMem)
         return self.gidList
-
-    async def getInfo(self, gid):
-        try:
-            url = f"https://groups.roproxy.com/v1/groups/{gid}"
-            d = await self.getRequest(url)
-            groupName = d.get("name")
-            groupMem = d.get("memberCount")
-            return groupName, groupMem
-        except Exception as e:
-            self.errors += 1
-            return "error", "error"
 
     async def getFunds(self, gid):
         try:
@@ -110,7 +111,8 @@ class Process:
         await self.client.shutdown() 
 
     async def processGroup(self, gid):
-        groupName, groupMem = await self.getInfo(gid)
+        groupInfo = self.groupInfoDict.get(gid, ("error", "error"))
+        groupName, groupMem = groupInfo
         groupFunds = await self.getFunds(gid)
         groupClothing = await self.getClothing(gid)
         groupPFunds = await self.getPFunds(gid)
@@ -132,7 +134,6 @@ class Process:
 
         startTimer = time.time()
         statG(f"CHECKING {len(gidList)} GROUPS | DELAY: {self.rateLimit} | WEBHOOK {'ENABLED' if discordEnabled else 'DISABLED'}")
-
         tasks = [self.processGroup(gid) for gid in gidList]
         for future in asyncio.as_completed(tasks):
             gid, group = await future
@@ -148,11 +149,13 @@ class Process:
         )
         totalGroups = len(groups)
         timeTook = time.time() - startTimer
+        totalErrors = self.errors + self.errorsRL
         results = {
             "totalGroups": totalGroups,
             "totalRobux": totalRobux,
             "timeDuration": timeTook,
-            "reqErrors": self.errors
+            "reqErrors": self.errors,
+            "ratelimitErrors": self.errorsRL,
         }
         output = {
             "groups": groups,
@@ -161,6 +164,6 @@ class Process:
 
         with open('output/groups.json', 'w') as f:
             json.dump(output, f, indent=4)
-        doneG(f"FINISHED | {totalGroups} GROUPS | {totalRobux} ROBUX | {timeTook:} SECONDS | {self.errors} ERRORS\nCHECK output/groups.json FOR RESULTS")
+        doneG(f"FINISHED | {totalGroups} GROUPS | {totalRobux} ROBUX | {timeTook} SECONDS | {totalErrors} ERRORS\nCHECK output/groups.json FOR RESULTS")
         await self.shutdown()
         
