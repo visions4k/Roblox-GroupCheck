@@ -1,5 +1,3 @@
-// proxy support coming soon not implemented yet, keep Proxy>isEnabled "false"
-
 {
     "Config": {
       "robloxUserID": "",
