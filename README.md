@@ -49,3 +49,8 @@ Discord Embed-
 
 ![Discord Embed](https://cdn.discordapp.com/attachments/1172623368994955354/1175633667209560174/image.png?ex=656bf12c&is=65597c2c&hm=611843008b6fe4c3d1df5dca43f9b912c6d3ad19ee363e499a600963730df6be&)
 
+
+## Thanks
+
+Concept & Idea from [lad / novak](https://github.com/ladiscool)
+
