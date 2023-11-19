@@ -43,7 +43,7 @@ Group Data-
 
 Result Data-
 
-![Results Data](https://cdn.discordapp.com/attachments/1172623368994955354/1175634546042093579/image.png?ex=656bf1fe&is=65597cfe&hm=1d237e86e78cdbf22cd77139801ca5aa53e69e6a9652695ada930ac8db0fc1ff&)
+![Results Data](https://cdn.discordapp.com/attachments/1172623368994955354/1175645379044311091/image.png?ex=656bfc14&is=65598714&hm=3cc7d8acd084a269be65ef9bdd4197d91ca0503c60bf6d2fbd2b3329b4df4e3c&)
 
 Discord Embed-
 
