@@ -1,6 +1,5 @@
 import json
 import aiosonic
-import aiohttp
 import time
 from checker.cload import *
 from checker.extras import *
@@ -10,7 +9,6 @@ from colorama import Fore, Style
 class Process:
     def __init__(self):
         self.client = aiosonic.HTTPClient()
-        self.client2 = aiohttp.ClientSession(cookies=robloxCookie)
         self.gidList = []
         self.rateLimit = antiRatelimit
         
@@ -34,14 +32,17 @@ class Process:
             return str(e)
         
     async def getFunds(self, GID):
-        r = await self.client2.get(f"https://economy.roblox.com/v1/groups/{GID}/currency")
+        headers = {'Cookie': f".ROBLOSECURITY={robloxCookie}"}
+        r = await self.client.get(f"https://economy.roblox.com/v1/groups/{GID}/currency", headers=headers)
         d = await r.json()
+        print(d)
         return d.get("robux")
         
     
     async def getPFunds(self, GID):
+        headers = {'Cookie': f".ROBLOSECURITY={robloxCookie}"}
         today = datetime.now().strftime("%Y-%m-%d")
-        r = await self.client2.get(f"https://economy.roblox.com/v1/groups/{GID}/revenue/summary/{today}")
+        r = await self.client2.get(f"https://economy.roblox.com/v1/groups/{GID}/revenue/summary/{today}", headers=headers)
         d = await r.json()
         return d.get("pendingRobux")
     
