@@ -11,21 +11,13 @@ def checking(input):
     print(f"{Fore.YELLOW}► {input}{Style.RESET_ALL}")
     
     
-async def sendWebhook(gid, group):
-    groupName = group["name"]
-    groupMem = group["members"]
-    groupFunds = group["funds"]
-    groupPFunds = group["fundsPending"]
-    groupClothing = group["clothing"]
-    groupGames = group["games"]
-    groupVisits = group["visits"]
-
+async def sendWebhook(gid, name, members, clothing, funds, fundsPending, games, visits):
     embed = {
         "embeds": [
             {
-                "title": groupName,
+                "title": name,
                 "url": f"https://www.roblox.com/groups/{gid}/-",
-                "description": f"> **Group ID:** `{gid}`\n> **Members:** `{groupMem}`\n> **Funds:** `{groupFunds}`\n> **Pending Funds:** `{groupPFunds}`\n> **Clothing Count:** `{groupClothing}`\n> **Total Games:** `{groupGames}`\n> **Total Visits:** `{groupVisits}`",
+                "description": f"> **Group ID:** `{gid}`\n> **Members:** `{members}`\n> **Funds:** `{funds}`\n> **Pending Funds:** `{fundsPending}`\n> **Clothing Count:** `{clothing}`\n> **Total Games:** `{games}`\n> **Total Visits:** `{visits}`",
                 "color": 0x2f3136
             }
         ]
