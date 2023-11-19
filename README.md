@@ -1,7 +1,7 @@
 
 # Roblox Group Checker
 
-This super faster roblox group checker utilizes the speeds of aiosonic & aiohttp to achieve the best speed possible. The group checker includes features such as anti ratelimit customization, and discord webhook support. When group checking is finished, it imports all the group and the groups information in a organized json file, which also includes the finished results (total groups, total robux, & time taken)
+This super faster roblox group checker utilizes the speeds of aiosonic to achieve the best speed possible. The group checker includes features such as anti ratelimit customization, and discord webhook support. When group checking is finished, it imports all the group and the groups information in a organized json file, which also includes the finished results (total groups, total robux, & time taken)
 
 
 # Data Scraped
