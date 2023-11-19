@@ -42,7 +42,7 @@ class Process:
     async def getPFunds(self, GID):
         headers = {'Cookie': f".ROBLOSECURITY={robloxCookie}"}
         today = datetime.now().strftime("%Y-%m-%d")
-        r = await self.client2.get(f"https://economy.roblox.com/v1/groups/{GID}/revenue/summary/{today}", headers=headers)
+        r = await self.client.get(f"https://economy.roblox.com/v1/groups/{GID}/revenue/summary/{today}", headers=headers)
         d = await r.json()
         return d.get("pendingRobux")
     
@@ -77,7 +77,6 @@ class Process:
     
     async def shutdown(self):
         await self.client.shutdown()
-        await self.client2.close()
         
     async def process_groups(self):
         gidList = await self.getGroups() 
