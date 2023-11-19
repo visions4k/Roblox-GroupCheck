@@ -1,5 +1,6 @@
 import json
 import aiosonic
+import asyncio
 import time
 from checker.cload import *
 from checker.extras import *
@@ -77,32 +78,42 @@ class Process:
     async def shutdown(self):
         await self.client.shutdown()
         
-    async def process_groups(self):
+    async def processGroup(self, gid):
+        groupName, groupMem = await self.getInfo(gid)
+        groupFunds = await self.getFunds(gid)
+        groupClothing = await self.getClothing(gid)
+        groupPFunds = await self.getPFunds(gid)
+        groupGames, groupVisits = await self.getGames(gid)
+        return gid, {
+            "name": groupName,
+            "members": groupMem,
+            "clothing": groupClothing,
+            "funds": groupFunds,
+            "fundsPending": groupPFunds,
+            "games": groupGames,
+            "visits": groupVisits
+        }
+
+    async def processGroups(self):
         gidList = await self.getGroups() 
         groups = {}
         
         startTimer = time.time()
         checking(f"CHECKING {len(gidList)} GROUPS | DELAY: {self.rateLimit} | WEBHOOK {'ENABLED' if discordEnabled else 'DISABLED'}")
-        for i, gid in enumerate(gidList):
-            groupName, groupMem = await self.getInfo(gid)
-            groupFunds = await self.getFunds(gid)
-            groupClothing = await self.getClothing(gid)
-            groupPFunds = await self.getPFunds(gid)
-            groupGames, groupVisits = await self.getGames(gid)
-            groups[gid] = {
-                "name": groupName,
-                "members": groupMem,
-                "clothing": groupClothing,
-                "funds": groupFunds,
-                "fundsPending": groupPFunds,
-                "games": groupGames,
-                "visits": groupVisits
-            }
+        
+        tasks = [self.processGroup(gid) for gid in gidList]
+        for future in asyncio.as_completed(tasks):
+            gid, group = await future
+            groups[gid] = group
             if discordEnabled:
-                await sendWebhook(gid, groupName, groupMem, groupFunds, groupClothing, groupPFunds, groupGames, groupVisits)
+                await sendWebhook(gid, **group)
             successful(f"GROUP {gid} SUCCESSFUL")
             time.sleep(int(self.rateLimit))
-        totalRobux = sum(group.get("funds", 0) + group.get("fundsPending", 0) for group in groups.values())
+        totalRobux = sum(
+            group.get("funds", 0) + group.get("fundsPending", 0)
+            for group in groups.values()
+            if isinstance(group.get("funds", 0), int) and isinstance(group.get("fundsPending", 0), int)
+        )
         totalGroups = len(groups)
         timeTook = time.time() - startTimer
         results = {
