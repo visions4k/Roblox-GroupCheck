@@ -11,7 +11,15 @@ def checking(input):
     print(f"{Fore.YELLOW}► {input}{Style.RESET_ALL}")
     
     
-async def sendWebhook(gid, groupName, groupMem, groupFunds, groupPFunds, groupClothing, groupGames, groupVisits):
+async def sendWebhook(gid, group):
+    groupName = group["name"]
+    groupMem = group["members"]
+    groupFunds = group["funds"]
+    groupPFunds = group["fundsPending"]
+    groupClothing = group["clothing"]
+    groupGames = group["games"]
+    groupVisits = group["visits"]
+
     embed = {
         "embeds": [
             {
