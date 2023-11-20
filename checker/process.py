@@ -16,29 +16,40 @@ class Process:
         self.cookie = bypassedCookie
         self.proxyList = loadProxies()
         self.client = aiosonic.HTTPClient()
+        self.success = 0
         self.errors = 0
         self.errorsRL = 0
+        self.proxyEnabled = False
+        self.fullAccuracy = fullAccuracy
         
 
     async def getRequest(self, url, headers=None):
-        while proxyEnabled:
+        while self.proxyEnabled:
             proxy = URL(f"http://{random.choice(self.proxyList)}")
-            print("not avaliable yet")
+            print("not available yet")
         else:
-            for _ in range(3):
+            for _ in range(10):
                 try:
                     r = await self.client.get(url, headers=headers)
                     if r.status_code == 200:
+                        self.success += 1
                         return await r.json()
                     elif r.status_code == 429:
-                        self.errorsRL += 1
-                        break 
+                        if self.fullAccuracy:
+                            continue
+                        else:
+                            self.errorsRL += 1
+                            break
                     else:
                         self.errors += 1
                 except Exception as e:
-                    self.errors += 1
-            return None
-
+                    if self.fullAccuracy:
+                        continue
+                    else:
+                        self.errors += 1
+                        return None
+                if self.fullAccuracy:
+                    await asyncio.sleep(2)
 
     async def getGroups(self):
         url = f"https://groups.roblox.com/v2/users/{robloxUserID}/groups/roles"
@@ -76,27 +87,44 @@ class Process:
             return "error"
 
     async def getClothing(self, gid):
-        try:
-            url = f"https://catalog.roblox.com/v1/search/items/details?Category=3&SortType=Relevance&CreatorTargetId={gid}&ResultsPerPage=100&CreatorType=2"
-            d = await self.getRequest(url)
-            clothes = d.get("data", [])
-            groupClothing = len(clothes)
+        for _ in range(10):
+            try:
+                url = f"https://catalog.roblox.com/v1/search/items/details?Category=3&SortType=Relevance&CreatorTargetId={gid}&ResultsPerPage=100&CreatorType=2"
+                d = await self.getRequest(url)
+                clothes = d.get("data", [])
+                groupClothing = len(clothes)
 
-            while True:
-                if c := d.get("nextPageCursor"):
-                    url = f"https://catalog.roblox.com/v1/search/items/details?Category=3&SortType=Relevance&CreatorTargetId={gid}&ResultsPerPage=100&CreatorType=2&cursor={c}"
-                    d = await self.getRequest(url)
-                    clothes = d.get("data", [])
-                    groupClothing += len(clothes)
+                while True:
+                    if c := d.get("nextPageCursor"):
+                        url = f"https://catalog.roblox.com/v1/search/items/details?Category=3&SortType=Relevance&CreatorTargetId={gid}&ResultsPerPage=100&CreatorType=2&cursor={c}"
+                        d = await self.getRequest(url)
+                        clothes = d.get("data", [])
+                        groupClothing += len(clothes)
+                    else:
+                        break
+
+                return groupClothing
+            except Exception as e:
+                if self.fullAccuracy:
+                    await asyncio.sleep(10)
                 else:
-                    break
-
-            return groupClothing
-        except Exception as e:
-            self.errors += 1
-            return "error"
+                    self.errors += 1
+                    return "error"
+        return "full error"
 
     async def getGames(self, gid):
+        try:
+            url = f"https://games.roblox.com/v2/groups/{gid}/gamesV2?accessFilter=2&limit=100&sortOrder=Asc"
+            d = await self.getRequest(url)
+            games = d.get("data", [])
+            groupVisits = sum(game.get("placeVisits", 0) for game in games)
+            groupGames = len(games)
+            return groupGames, groupVisits
+        except Exception as e:
+            self.errors += 1
+            return "error", "error"
+        
+    async def getCreated(self, gid):
         try:
             url = f"https://games.roblox.com/v2/groups/{gid}/gamesV2?accessFilter=2&limit=100&sortOrder=Asc"
             d = await self.getRequest(url)
@@ -114,10 +142,16 @@ class Process:
     async def processGroup(self, gid):
         groupInfo = self.groupInfoDict.get(gid, ("error", "error"))
         groupName, groupMem = groupInfo
-        groupFunds = await self.getFunds(gid)
-        groupClothing = await self.getClothing(gid)
-        groupPFunds = await self.getPFunds(gid)
-        groupGames, groupVisits = await self.getGames(gid)
+        if isCustomEnabled:
+            groupFunds = await self.getFunds(gid) if isFundsEnabled else "excluded"
+            groupClothing = await self.getClothing(gid) if isClothingEnabled else "excluded"
+            groupPFunds = await self.getPFunds(gid) if isPFundsEnabled else "excluded"
+            groupGames, groupVisits = await self.getGames(gid) if isGameEnabled else ("excluded", "excluded")
+        else:
+            groupFunds = await self.getFunds(gid)
+            groupClothing = await self.getClothing(gid)
+            groupPFunds = await self.getPFunds(gid)
+            groupGames, groupVisits = await self.getGames(gid)
         return gid, {
             "name": groupName,
             "members": groupMem,
@@ -138,7 +172,15 @@ class Process:
         tasks = [self.processGroup(gid) for gid in gidList]
         for future in asyncio.as_completed(tasks):
             gid, group = await future
-            groups[gid] = group
+            if outputFilter:
+                members = int(group.get("members", 0)) if isinstance(group.get("members", 0), int) else 0
+                funds = int(group.get("funds", 0)) if isinstance(group.get("funds", 0), int) else 0
+                fundsPending = int(group.get("fundsPending", 0)) if isinstance(group.get("fundsPending", 0), int) else 0
+                clothing = int(group.get("clothing", 0)) if isinstance(group.get("clothing", 0), int) else 0
+                if members > 100 or funds > 0 or fundsPending > 0 or clothing > 25:
+                    groups[gid] = group
+            else:
+                groups[gid] = group
             if discordEnabled:
                 await sendWebhook(gid, **group)
             checkedG(f"GROUP {gid} SUCCESSFUL")
@@ -150,11 +192,11 @@ class Process:
         )
         totalGroups = len(groups)
         timeTook = time.time() - startTimer
-        totalErrors = self.errors + self.errorsRL
         results = {
             "totalGroups": totalGroups,
             "totalRobux": totalRobux,
             "timeDuration": timeTook,
+            "reqSuccessful": self.success,
             "reqErrors": self.errors,
             "ratelimitErrors": self.errorsRL,
         }
@@ -165,6 +207,6 @@ class Process:
 
         with open('output/groups.json', 'w') as f:
             json.dump(output, f, indent=4)
-        doneG(f"FINISHED | {totalGroups} GROUPS | {totalRobux} ROBUX | {timeTook} SECONDS | {totalErrors} ERRORS\nCHECK output/groups.json FOR RESULTS")
+        doneG(f"FINISHED | {totalGroups} GROUPS | {totalRobux} ROBUX | {timeTook} SECONDS | {self.errors} ERRORS\nCHECK output/groups.json FOR RESULTS")
         await self.shutdown()
         
