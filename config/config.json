@@ -5,11 +5,15 @@
       },
     "Checker": {
         "antiRatelimit": "0",
-        "Proxy": {
-            "isEnabled": false,
-            "autoScrape": false ,
-            "timeout": 5
-        }
+        "fullAccuracy": false,
+        "customDetections": {
+          "isEnabled": false,
+          "showClothing": true,
+          "showFunds": true,
+          "showFundsPending": true,
+          "showGameInfo": true
+        },
+        "outputFilter": false
     },
     "Discord": {
       "isEnabled": false,
