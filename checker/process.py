@@ -6,7 +6,6 @@ import random
 from checker.cload import *
 from checker.extras import *
 from datetime import datetime
-from colorama import Fore, Style
 from yarl import URL
 
 class Process:
@@ -23,6 +22,7 @@ class Process:
 
     async def getRequest(self, url, headers=None):
         while proxyEnabled:
+            proxy = URL(f"http://{random.choice(self.proxyList)}")
             print("not avaliable yet")
         else:
             for _ in range(3):
@@ -41,7 +41,7 @@ class Process:
 
 
     async def getGroups(self):
-        url = f"https://groups.roproxy.com/v2/users/{robloxUserID}/groups/roles"
+        url = f"https://groups.roblox.com/v2/users/{robloxUserID}/groups/roles"
         d = await self.getRequest(url)
         groups = d.get('data', [])
         for group_data in groups:
@@ -52,6 +52,7 @@ class Process:
                 self.gidList.append(gid)
                 self.groupInfoDict[gid] = (groupName, groupMem)
         return self.gidList
+
 
     async def getFunds(self, gid):
         try:
