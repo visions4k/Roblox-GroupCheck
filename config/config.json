@@ -6,14 +6,14 @@
     "Checker": {
         "antiRatelimit": "0",
         "fullAccuracy": false,
+        "outputFilter": false,
         "customDetections": {
           "isEnabled": false,
           "showClothing": true,
           "showFunds": true,
           "showFundsPending": true,
           "showGameInfo": true
-        },
-        "outputFilter": false
+        }
     },
     "Discord": {
       "isEnabled": false,
