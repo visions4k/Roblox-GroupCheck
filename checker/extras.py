@@ -4,7 +4,6 @@ from checker.cload import *
 from bs4 import BeautifulSoup
 from colorama import Fore, Style
 
-    
 psUrl = [  
     'https://api.proxyscrape.com/v2/?request=displayproxies&protocol=https&timeout=1000&country=all&ssl=all&anonymity=all',      
 ]
