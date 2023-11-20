@@ -9,10 +9,10 @@
         "outputFilter": false,
         "customDetections": {
           "isEnabled": false,
-          "showClothing": true,
-          "showFunds": true,
-          "showFundsPending": true,
-          "showGameInfo": true
+          "getClothing": true,
+          "getFunds": true,
+          "getFundsPending": true,
+          "getGameInfo": true
         }
     },
     "Discord": {
