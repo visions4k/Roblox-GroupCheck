@@ -23,6 +23,12 @@ The configuration file is config/config.json
 
 in "Discord" > "isEnabled", this is default false, if set to true, it will be expecting a "webhookURL" which will send each group through the discord webhook. 
 
+"fullAccuracy" will garuentee a successful request, meaning it will retry until successful. 
+
+"customDetections" will allow you to change what you want to get. This can help with ratelimits and if your not interested in some of the groups information. 
+
+"outputFilter" will only put groups in output/groups.json if the members are more then 100, if it has any funds/pending funds, and if the clothing is more then 25. 
+
 # Start
 
 Run python start.py when the config file is configured.
