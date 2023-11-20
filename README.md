@@ -62,6 +62,11 @@ Discord Embed-
 + 11/19/2023 - 
   - Speed increase, help w/ ratelimits (removed unnessary req)
   - Ratelimit counting
+ 
++ 11/20/2023
+   - Full Accuracy option added (will retry all ratelimited request, ensuring for a 100% ok response)
+   - Custom detections option added (can choose what to request, can help with ratelimits, or if your only interested in one asset of groups)
+   - Output filter option added (will only show groups in output if the group members are more then 100, funds are more then 0, pending funds more then 0, and clothing more then 25)
 
 
 ## To do (coming soon) 
